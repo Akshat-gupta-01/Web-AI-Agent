@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Akshat's AI Assistant</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="side-top">
+      <div class="logo">AK</div>
+      <div>
+        <h2>My Assistant</h2>
+        <span class="mode-badge" id="modeBadge">Offline</span>
+      </div>
+    </div>
+
+    <button class="btn new-chat" id="newChatBtn">+ New Chat</button>
+
+    <div class="quick">
+      <h3>Quick Ask</h3>
+      <div class="quick-list">
+        <button class="chip" data-q="Explain OOP concepts in Java with examples">Java OOP</button>
+        <button class="chip" data-q="How do I clear a Python error?">Python help</button>
+        <button class="chip" data-q="Explain binary search with a dry run">DSA topic</button>
+        <button class="chip" data-q="How do I centre a div using flexbox?">CSS centre</button>
+        <button class="chip" data-q="my progress">My progress</button>
+        <button class="chip" data-q="quiz DBMS">Quiz me</button>
+        <button class="chip" data-q="Give me a resume tip for a software internship">Resume tip</button>
+        <button class="chip" data-q="Make a 8 slide presentation plan on my project">PPT plan</button>
+      </div>
+    </div>
+
+    <div class="history">
+      <h3>Chat History</h3>
+      <div id="historyList" class="history-list"></div>
+    </div>
+
+    <button class="btn learn-btn" id="learnBtn">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 012-2h13v18H6a2 2 0 01-2-1.5z"/><path d="M8 7h7M8 11h7"/></svg>
+      Learning &amp; Revision
+      <span class="badge" id="dueBadge" hidden>0</span>
+    </button>
+    <button class="btn settings-btn" id="settingsBtn">Settings</button>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" title="Menu">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="title-wrap">
+        <strong id="chatTitle">New Chat</strong>
+        <small id="chatSub">Running offline &middot; no API key needed</small>
+      </div>
+      <button class="icon-btn" id="voiceBtn" title="Voice output on/off">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg>
+      </button>
+    </header>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="composer">
+      <div class="attach-bar" id="attachBar"></div>
+
+      <div class="input-row">
+        <button class="icon-btn" id="fileBtn" title="Upload PDF / notes">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5l-8.8 8.8a5 5 0 01-7.1-7.1l9-9a3.4 3.4 0 014.8 4.8l-8.9 8.9a1.8 1.8 0 01-2.5-2.5l8.2-8.2"/></svg>
+        </button>
+        <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv,.java,.py,.js,.html,.css,.json" hidden />
+
+        <textarea id="input" rows="1" placeholder="Ask anything... (Enter to send, Shift+Enter for new line)"></textarea>
+
+        <button class="icon-btn" id="micBtn" title="Speak your question">
+          <svg class="ic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21M8.5 21h7"/></svg>
+        </button>
+        <button class="icon-btn send" id="sendBtn" title="Send">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <div class="composer-foot">
+        <span id="statusText">Offline mode &middot; answers from built-in knowledge</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="modal" id="settingsModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Settings</h3>
+      <button class="icon-btn" id="closeSettings">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <label class="field">
+        <span>Brain mode</span>
+        <select id="modeSelect">
+          <option value="offline">Offline &mdash; no API, AIML rules engine</option>
+          <option value="gemini">Google Gemini (free API key)</option>
+          <option value="groq">Groq (free API key)</option>
+        </select>
+        <small>Offline runs the AIML engine and works with no internet at all. The AI modes answer anything.</small>
+      </label>
+
+      <label class="field" id="keyField">
+        <span>API key</span>
+        <input type="text" id="apiKey" placeholder="Paste your free key here" autocomplete="off" />
+        <small>Saved only in this browser (localStorage). Never uploaded anywhere except the AI provider.</small>
+        <div class="btn-row">
+          <button class="btn ghost small" id="keyHelpBtn">How do I get a free key?</button>
+          <button class="btn ghost small" id="testKeyBtn">Test this key</button>
+        </div>
+        <div class="keytest" id="keyTest" hidden></div>
+      </label>
+
+      <div class="guide" id="keyGuide" hidden>
+        <h4>Google Gemini &mdash; recommended, free</h4>
+        <ol>
+          <li>Open <code>aistudio.google.com/apikey</code> and sign in with your Google account. No credit card needed.</li>
+          <li>Click <b>Create API key</b>. If it asks for a project, pick <b>Create API key in new project</b>.</li>
+          <li>Copy the key. It starts with <code>AIza</code> and is about 39 characters.</li>
+          <li>Here: Brain mode = <b>Google Gemini</b>, Model = <code>gemini-2.5-flash</code> (or leave it blank, the app discovers a working model), paste the key, <b>Save</b>.</li>
+        </ol>
+        <p class="note"><b>Check that the Key Type column says &ldquo;auth&rdquo;.</b> Google retired the old <i>Standard</i> key type during 2026, so an older key gets rejected. If yours says Standard, delete it and create a new one &mdash; new keys are auth keys automatically.</p>
+
+        <h4>Groq &mdash; alternative, free</h4>
+        <ol>
+          <li>Open <code>console.groq.com</code> and sign up.</li>
+          <li>Open <b>API Keys</b> in the sidebar → <b>Create API Key</b> → copy it.</li>
+          <li>Here: Brain mode = <b>Groq</b>, Model = <code>llama-3.3-70b-versatile</code>, paste the key, <b>Save</b>.</li>
+        </ol>
+
+        <h4>Testing it</h4>
+        <ol>
+          <li>Save, then send any message. If the key works the status bar changes to <i>Online mode</i>.</li>
+          <li>If it fails, the exact error from Google or Groq is printed in the chat, so nothing is hidden.</li>
+        </ol>
+
+        <p class="note"><b>Safety.</b> The key is stored only in this browser's localStorage and is sent only to that provider. Never commit a key to GitHub, and if you host this project on Netlify or GitHub Pages, do not paste the key into the code &mdash; leave it as a browser-side key.</p>
+      </div>
+
+      <label class="field" id="modelField">
+        <span>Model name</span>
+        <input type="text" id="modelName" placeholder="gemini-2.5-flash" />
+        <small>Leave blank and the app asks Google which models your key can use, then picks a working one.</small>
+      </label>
+
+      <label class="field">
+        <span>Your name</span>
+        <input type="text" id="userName" placeholder="Akshat" />
+      </label>
+
+      <label class="field">
+        <span>Personality &amp; rules (this is the system prompt)</span>
+        <textarea id="systemPrompt" rows="10" spellcheck="false"></textarea>
+        <small>Edit freely. This is what makes the assistant "yours".</small>
+      </label>
+
+      <div class="modal-actions">
+        <button class="btn ghost" id="resetPromptBtn">Reset personality</button>
+        <button class="btn primary" id="saveSettingsBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ LEARNING MODAL ============ -->
+<div class="modal" id="learnModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Learning &amp; Revision</h3>
+      <button class="icon-btn" id="closeLearn">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body" id="learnBody"></div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="resetLearnBtn">Reset progress</button>
+      <button class="btn primary" id="quizWeakBtn">Quiz me on weak topics</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/knowledge.js"></script>
+<script src="js/aiml-data.js"></script>
+<script src="js/learning.js"></script>
+<script src="js/aiml.js"></script>
+<script src="js/agent.js"></script>
+<script src="js/api.js"></script>
+<script src="js/files.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
