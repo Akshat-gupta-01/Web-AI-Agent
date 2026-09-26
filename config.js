@@ -11,7 +11,7 @@
 
 const CONFIG = {
   /* Google Gemini — free key from https://aistudio.google.com/apikey */
-  geminiKey: "AQ.Ab8RN6I09YQfzeu-X3dLR54j82BCYYZnCBvKwTrwAFbETefLVg",
+  geminiKey: "",
 
   /* Groq — free key from https://console.groq.com  (optional) */
   groqKey: "",
